@@ -47,5 +47,7 @@ while cur_iter < num_iters:
 	#you've trained the model for some number of epochs
 	history = model.fit(X_train, y_train, batch_size=batch_size, nb_epoch=epochs_per_iter, verbose=1, validation_split=0.0)
 	cur_iter += epochs_per_iter
+	model2 = model
+	model2.save_weights(model_basename + str(cur_iter))
 print ('Training complete!')
 model.save_weights(model_basename + str(cur_iter))
