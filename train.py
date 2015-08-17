@@ -32,9 +32,9 @@ model = network_utils.create_lstm_network(num_frequency_dimensions=freq_space_di
 if os.path.isfile(model_filename):
 	model.load_weights(model_filename)
 
-num_iters = 10000 			#Number of iterations for training
-epochs_per_iter = 500		#Number of iterations before we save our model
-batch_size = 200			#Number of training examples pushed to the GPU per batch.
+num_iters = 100000 			#Number of iterations for training
+epochs_per_iter = 5000		#Number of iterations before we save our model
+batch_size = 500			#Number of training examples pushed to the GPU per batch.
 							#Larger batch sizes require more memory, but training will be faster
 print ('Starting training!')
 while cur_iter < num_iters:
