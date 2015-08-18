@@ -52,3 +52,19 @@ After some amount of time, you should have a file called generated_song.wav
 
 Future work:
 Improve generation algorithms. Our current generation scheme uses the training / testing data as a seed sequence, which tends to produce verbatum copies of the original songs. One might imagine that we could improve these results by taking linear combinations of the hidden states for different songs and projecting the combinations back into the frequency space and using those as seed sequences. You can find the core components of the generation algorithms in gen_utils/seed_generator.py and gen_utils/sequence_generator.py
+
+
+
+
+
+
+
+
+
+python convert_directory.py --input_directory /Users/gene/Code/Python/GRUV_new/GRUV/datasets/bluetrain2
+
+
+python train.py --input_directory /Users/gene/Code/Python/GRUV_new/GRUV/datasets/bluetrain2 --num_iters 200 --epochs_per_iter 50 --batch_size 10
+
+
+python generate.py --input_directory /Users/gene/Code/Python/GRUV_new/GRUV/datasets/bluetrain2 --model /Users/gene/Code/Python/GRUV_new/GRUV/datasets/bluetrain2/NPWeights_50_iter --output_file /Users/Gene/Desktop/myTryNPhello1.wav --max_seq_len 1 

@@ -6,15 +6,20 @@ import nn_utils.network_utils as network_utils
 import gen_utils.seed_generator as seed_generator
 import gen_utils.sequence_generator as sequence_generator
 from data_utils.parse_files import *
-import config.nn_config as nn_config
+import argparse
 
-config = nn_config.get_neural_net_configuration()
-sample_frequency = config['sampling_frequency']
-inputFile = config['model_file']
-model_basename = config['model_basename']
-cur_iter = 25
-model_filename = model_basename + str(cur_iter)
-output_filename = './generated_song.wav'
+parser = argparse.ArgumentParser()
+parser.add_argument('--input_directory', required=True, type=str) #model file
+parser.add_argument('--model', required=True, type=str) #model file
+parser.add_argument('--output_file', required=True, type=str)
+parser.add_argument('--hidden_dimension_size', type=int, default=1024)
+parser.add_argument('--seed_len', type=int, default=1)
+parser.add_argument('--max_seq_len', type=int, default=1)  #Defines how long the final song is. Total song length in samples = max_seq_len * example_len
+parser.add_argument('--sampling_rate', type=int, default=44100)
+args = parser.parse_args()
+
+inputFile = args.input_directory+'/NP'
+model_basename = args.input_directory+'/NPWeights'
 
 #Load up the training data
 print ('Loading training data')
@@ -30,18 +35,17 @@ print ('Finished loading training data')
 
 #Figure out how many frequencies we have in the data
 freq_space_dims = X_train.shape[2]
-hidden_dims = config['hidden_dimension_size']
 
 #Creates a lstm network
-model = network_utils.create_lstm_network(num_frequency_dimensions=freq_space_dims, num_hidden_dimensions=hidden_dims)
+model = network_utils.create_lstm_network(num_frequency_dimensions=freq_space_dims, num_hidden_dimensions=args.hidden_dimension_size)
 #You could also substitute this with a RNN or GRU
 #model = network_utils.create_gru_network()
 
 #Load existing weights if available
-if os.path.isfile(model_filename):
-	model.load_weights(model_filename)
+if os.path.isfile(args.model):
+	model.load_weights(args.model)
 else:
-	print('Model filename ' + model_filename + ' could not be found!')
+	print('Model filename ' + args.model + ' could not be found!')
 
 print ('Starting generation!')
 #Here's the interesting part
@@ -51,13 +55,11 @@ print ('Starting generation!')
 #In a sense, choosing good seed sequences = how you get interesting compositions
 #There are many, many ways we can pick these seed sequences such as taking linear combinations of certain songs
 #We could even provide a uniformly random sequence, but that is highly unlikely to produce good results
-seed_len = 1
-seed_seq = seed_generator.generate_copy_seed_sequence(seed_length=seed_len, training_data=X_train)
+seed_seq = seed_generator.generate_copy_seed_sequence(seed_length=args.seed_len, training_data=X_train)
 
-max_seq_len = 10; #Defines how long the final song is. Total song length in samples = max_seq_len * example_len
 output = sequence_generator.generate_from_seed(model=model, seed=seed_seq, 
-	sequence_length=max_seq_len, data_variance=X_var, data_mean=X_mean)
+	sequence_length=args.max_seq_len, data_variance=X_var, data_mean=X_mean)
 print ('Finished generation!')
 
 #Save the generated sequence to a WAV file
-save_generated_example(output_filename, output, sample_frequency=sample_frequency)
+save_generated_example(args.output_file, output, sample_frequency=args.sampling_rate)

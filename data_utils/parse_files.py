@@ -152,7 +152,6 @@ def convert_wav_files_to_nptensor(directory, block_size, max_seq_len, out_file, 
 	x_data[:][:] /= std_x #Variance 1
 	y_data[:][:] -= mean_x #Mean 0
 	y_data[:][:] /= std_x #Variance 1
-
 	np.save(out_file+'_mean', mean_x)
 	np.save(out_file+'_var', std_x)
 	np.save(out_file+'_x', x_data)
